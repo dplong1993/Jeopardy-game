@@ -15,25 +15,33 @@ window.addEventListener("DOMContentLoaded",async () => {
   let gameBoard = document.querySelector('.game-board');
   for(let columnEle of columnEles){
     columnEle.addEventListener('click', e => {
-      let outerIdx = e.target.parentElement.dataset.columnNum;
-      let innerIdx = e.target.dataset.rowNum;
-      let currClueObj = clueObjs[outerIdx][innerIdx];
-      gameBoard.classList.add('game-board--hidden');
-      let questionDiv = document.createElement('div');
-      questionDiv.innerText = currClueObj.question;
-      questionDiv.setAttribute('id', 'question');
-      document.body.append(questionDiv);
-      setTimeout(() => {
-        // debugger;
-        questionDiv.remove();
-        gameBoard.classList.remove('game-board--hidden');
-      }, 1000);
-      // console.log(e.target, e.target.parentElement);
-      // console.log(innerIdx, outerIdx);
-      console.log(clueObjs[outerIdx][innerIdx]);
+      if(e.target.innerText !== ''){
+        let outerIdx = e.target.parentElement.dataset.columnNum;
+        let innerIdx = e.target.dataset.rowNum;
+        let currClueObj = clueObjs[outerIdx][innerIdx];
+        gameBoard.classList.add('game-board--hidden');
+        let questionDiv = document.createElement('div');
+        questionDiv.innerText = currClueObj.question;
+        questionDiv.setAttribute('id', 'question');
+        document.body.append(questionDiv);
+        setTimeout(() => {
+          // debugger;
+          questionDiv.remove();
+          gameBoard.classList.remove('game-board--hidden');
+          clearClueValue(outerIdx, innerIdx);
+        }, 1000);
+        // console.log(e.target, e.target.parentElement);
+        // console.log(innerIdx, outerIdx);
+        console.log(clueObjs[outerIdx][innerIdx]);}
     });
   }
 });
+
+function clearClueValue(columnNum, rowNum){
+  let columnEle = document.querySelectorAll('.column')[columnNum];
+  let clueEle = columnEle.children[rowNum];
+  clueEle.innerText = '';
+}
 
 async function fetchCategories(){
   const catObjs = [];
