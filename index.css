@@ -50,6 +50,10 @@
   grid-template-rows: repeat(6, 1fr);
 }
 
+.game-board--hidden{
+  display: none;
+}
+
 .categories-holder{
   display: grid;
   grid-template-columns: repeat(6, 1fr);
@@ -88,4 +92,17 @@
 
 .column__clue{
   color: yellow;
+}
+
+#question{
+  width: 80%;
+  height: 23em;
+  background-color: blue;
+  color: white;
+  font-size: x-large;
+  font-family: 'Rubik', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }

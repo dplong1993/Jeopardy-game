@@ -2,7 +2,7 @@ window.addEventListener("DOMContentLoaded",async () => {
   let categoryObjs = new Array(6);
   let clueObjs = new Array();
   categoryObjs = await fetchCategories();
-  console.log(categoryObjs);
+  // console.log(categoryObjs);
   for(let i = 0; i < 6; i++){
     let catId = categoryObjs[i].id;
     let innerArr = await fetchClues(catId);
@@ -10,12 +10,35 @@ window.addEventListener("DOMContentLoaded",async () => {
   }
   // console.log(clueObjs);
   generateVisual(categoryObjs, clueObjs);
+
+  let columnEles = document.querySelectorAll('.column');
+  let gameBoard = document.querySelector('.game-board');
+  for(let columnEle of columnEles){
+    columnEle.addEventListener('click', e => {
+      let outerIdx = e.target.parentElement.dataset.columnNum;
+      let innerIdx = e.target.dataset.rowNum;
+      let currClueObj = clueObjs[outerIdx][innerIdx];
+      gameBoard.classList.add('game-board--hidden');
+      let questionDiv = document.createElement('div');
+      questionDiv.innerText = currClueObj.question;
+      questionDiv.setAttribute('id', 'question');
+      document.body.append(questionDiv);
+      setTimeout(() => {
+        // debugger;
+        questionDiv.remove();
+        gameBoard.classList.remove('game-board--hidden');
+      }, 1000);
+      // console.log(e.target, e.target.parentElement);
+      // console.log(innerIdx, outerIdx);
+      console.log(clueObjs[outerIdx][innerIdx]);
+    });
+  }
 });
 
 async function fetchCategories(){
   const catObjs = [];
   for(let i = 0; i < 6; i++){
-    let catObj = await fetchCategory(i + 107);
+    let catObj = await fetchCategory(i + 3);
     // console.log(catObj, ...catObj);
     catObjs.push(...catObj);
   }
@@ -24,6 +47,7 @@ async function fetchCategories(){
 
 async function fetchCategory(num){
   let res = await fetch(`https://jservice.io/api/categories/?offset=${num}`);
+  // let res = await fetch(`https://jservice.io/api/clues/?max_date=2014-12-24T12:00:00.000Z&&?min_date=2014-12-24T12:00:00.000Z`)
   if(res.ok){
     let data = await res.json();
     // console.log(data);
@@ -39,7 +63,7 @@ async function fetchClues(catId){
     let data = await res.json();
     if(data.length === 5) return data;
     if(data.length > 5){
-      console.log(data);
+      // console.log(data);
       return data.filter((_,i) => {
         return i % 2 === 1
       })
@@ -71,7 +95,7 @@ function generateCatVisual(catObjs){
 }
 
 function generateClueVisual(index, clueObjs){
-  console.log(clueObjs[index]);
+  // console.log(clueObjs[index]);
   let columnEle = document.querySelector(`[data-column-num="${index}"]`);
   let clueEles = columnEle.children;
   // console.log(columnEle, clueEles, clueObjs);
@@ -80,60 +104,6 @@ function generateClueVisual(index, clueObjs){
     clueEles[i].innerText = `$${clueObjs[index][i].value}`;
   }
 }
-
-// async function getCategories(){
-//   let res = await fetch('https://jservice.xyz/api/categories');
-//   if(res.ok){
-//     let data = await res.json();
-//     let categoryObjsList = new Array(6);
-//     for(let i = 0; i < 6; i++){
-//       let randomNum = Math.floor(Math.random() * 40986);
-//       categoryObjsList[i] = data.categories[randomNum];
-//     }
-//     // console.log(categoryObjsList);
-//     setCatVisual(categoryObjsList);
-//     // console.log(categoryObjsList[0].id);
-//     getClues(categoryObjsList);
-//   } else {
-//     handleError();
-//   }
-// }
-
-// function setCatVisual(catObjsList){
-//   let catEles = document.querySelectorAll('.category');
-//   for(let i = 0; i < catObjsList.length; i++){
-//     // console.log(catEles[i], catObjsList[i]);
-//     catEles[i].innerText = catObjsList[i].title;
-//   }
-// }
-
-// async function getClues(catObjsList){
-//   let catId = catObjsList[0].id;
-//   let clueObjsList = [];
-//   let res = await fetch(`https://jservice.io/api/clues/?category=${catId}`);
-//   if(res.ok){
-//     console.log(res);
-//     let data = await res.json();
-//     console.log(data);
-//     let count = 0;
-//     while(clueObjsList.length < 5){
-//       // console.log(data, data.categoryId, catId, data.categoryId === catId);
-//       clueObjsList.push(data[count]);
-//       count++;
-//     }
-//     console.log(clueObjsList);
-//     updateClueVisual(clueObjsList);
-//   }
-// }
-
-// function updateClueVisual(clueObjsList){
-//   let columnEle = document.querySelector('[data-column-num="0"]');
-//   let clueEles = columnEle.children;
-//   console.log(clueEles);
-//   for(let i = 0; i < clueObjsList.length; i++){
-//     clueEles[i].innerText = `$${clueObjsList[i].value}`;
-//   }
-// }
 
 function handleError(){
   alert('Something went wrong.Please try again.');
